@@ -1,1 +1,567 @@
-<h1>Hello World!</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs
+         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>Garment Particles</title>
+    <meta name="description" content="Garment Particles: A 2D–3D Symmetric Garment Representation for Generation and Editing. SIGGRAPH 2026.">
+    <meta name="author" content="Kiyohiro Nakayama, I-Chao Shen, Ruofan Liu, Yiming Wang, Gordon Wetzstein, Takeo Igarashi">
+
+    <!-- Mobile Specific Metas
+         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- CSS
+         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/footable.standalone.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- Google icon -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Slider -->
+    <link rel="stylesheet" href="css/dics.css">
+    <script src="js/dics.js"></script>
+
+    <style>
+      .uniform-height {
+          height: 315px;
+          width: auto;
+          object-fit: cover;
+          display: block;
+      }
+
+      img { margin: 0; padding: 0; }
+
+
+      @media (min-width: 550px) {
+        .column.has-text-centered { margin-left: 0 !important; }
+      }
+
+      .publication-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+
+      .link-block { display: inline-block; }
+
+      .external-link {
+        display: flex;
+        align-items: center;
+        background-color: #363636;
+        color: #fff;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 24px;
+        font-size: 14px;
+        font-weight: normal;
+        text-transform: none;
+      }
+
+      .external-link .icon { margin-right: 6px; }
+      .external-link .icon i { font-size: 16px; }
+      .external-link:hover { background-color: #4a4a4a; }
+
+      iframe {
+        width: 100%;
+        max-width: 960px;
+        aspect-ratio: 16 / 9;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+      }
+
+      .caption {
+        margin-top: 8px;
+        margin-bottom: 24px;
+        font-size: 1.4rem;
+        line-height: 1.5;
+      }
+
+      h6 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Diffusion video player */
+      #diffusion-player { margin: 0 auto 16px; }
+      #diffusion-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+      .sample-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sample-col video {
+        width: 100%;
+        height: auto;
+        background: transparent;
+        object-fit: contain;
+        display: block;
+      }
+      .sample-col .vid-top { aspect-ratio: 27 / 20; object-fit: cover; }
+      .sample-col .vid-bot { aspect-ratio: 1 / 1; object-fit: contain; }
+      .sample-col video, #diffusion-label { transition: opacity 0.45s ease; }
+      .sample-col video.fading, #diffusion-label.fading { opacity: 0; }
+      .sample-label {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #555;
+        margin: 0;
+      }
+      #diffusion-label {
+        text-align: center;
+        font-size: 1.3rem;
+        color: #666;
+        margin-top: 10px;
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <!-- Title -->
+      <h4 style="text-align:center; margin-top: 3rem;">Garment Particles: A 2D&ndash;3D Symmetric Garment Representation for Generation and Editing</h4>
+
+      <!-- Authors -->
+      <p align="center" style="margin-bottom:12px;">
+        <a class="simple" href="https://georgenakayama.github.io/">Kiyohiro Nakayama</a><sup>1</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="simple" href="#">I-Chao Shen</a><sup>2</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="simple" href="#">Ruofan Liu</a><sup>3</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="simple" href="#">Yiming Wang</a><sup>4</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="simple" href="#">Gordon Wetzstein</a><sup>1</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="simple" href="#">Takeo Igarashi</a><sup>2</sup>
+      </p>
+
+      <!-- Affiliations -->
+      <p align="center" style="margin-bottom:20px;">
+        <sup>1</sup>Stanford University
+        <span style="display:inline-block; width: 28px"></span>
+        <sup>2</sup>The University of Tokyo
+        <span style="display:inline-block; width: 28px"></span>
+        <sup>3</sup>Institute of Science Tokyo
+        <span style="display:inline-block; width: 28px"></span>
+        <sup>4</sup>ETH Zurich
+      </p>
+
+      <!-- Publication links -->
+      <div class="column has-text-centered">
+        <div class="publication-links">
+          <span class="link-block">
+            <a href="main.pdf" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon"><i class="fas fa-file-pdf"></i></span>
+              <span>Paper</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a href="#" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon"><i class="ai ai-arxiv"></i></span>
+              <span>arXiv</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a href="#" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon"><i class="fab fa-github"></i></span>
+              <span>Code</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a href="#" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon"><i class="fas fa-database"></i></span>
+              <span>Dataset (HF)</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a href="#video" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon"><i class="fas fa-video"></i></span>
+              <span>Video</span>
+            </a>
+          </span>
+        </div>
+      </div>
+
+      <!-- Venue badge -->
+      <div class="venue">
+        <p align="center"><strong>SIGGRAPH Conference Papers 2026 &middot; Los Angeles, CA</strong></p>
+      </div>
+
+      <!-- Supplementary Video -->
+      <h5 id="video" style="text-align:center;">Supplementary Video</h5>
+      <iframe src="https://www.youtube.com/embed/" title="Garment Particles supplementary video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <br>
+
+      <!-- Teaser -->
+      <figure>
+        <img src="images/teaser.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        <b>Garment Particles</b> is a garment representation that models both the sewing pattern and its draped garment geometry in a symmetric, 2D&ndash;3D point cloud. <b>(a)</b> shows the garment particles representation. The color on the 3D garment (left) and the 2D sewing pattern (right) indicate the same points. <em>Garment Particles Flow (GPF)</em>, a generative framework, generates garment particles from multimodal inputs. More importantly, the prior space of GPF enables versatile editing in both 3D garment geometry and 2D sewing pattern domains. Finally, Particles-to-Pattern Flow (PPF) converts the generated particles to simulation-ready sewing patterns. <b>(b)</b> shows the various editing applications enabled by GPF.
+        <br><br>
+      </div>
+
+      <!-- Abstract -->
+      <div id="abstract" class="container" style="width:100%; margin:0; padding:0">
+        <h5>Abstract</h5>
+        <p align="justify">
+          Practical garment design spans two modes: intuitive creation from high-level intent, such as a reference image or text description, and complex low-level editing across 2D sewing patterns and 3D draped geometry, which requires professional training to navigate their complex interdependencies. Yet existing frameworks address only part of this challenge, offering either garment generation from casual inputs or direct editing on sewing patterns.
+          To support both ends of the spectrum, we propose <b>Garment Particles</b>, a 5D point-cloud representation that jointly encodes 2D sewing patterns and 3D geometry. This representation enables <em>Garment Particles Flow (GPF)</em>, a rectified flow framework that supports intuitive generation from high-level inputs (text, images, sketches) and various editing operations on 2D sewing patterns and 3D geometries via diffusion posterior sampling. Finally, we introduce <em>Particles-to-Pattern Flow</em> that converts generated garment particles into curved-based patterns for simulation. We validate our model's generation ability on multiple datasets, achieving state-of-the-art garment generation results against competitive baselines. Our model also enables many garment editing scenarios, including garment interpolation, sewing pattern editing, point-cloud- and silhouette-conditioned garment generation.
+        </p>
+      </div>
+
+      <br>
+
+      <!-- Method -->
+      <h5>Method</h5>
+      <p align="justify">
+        Our framework has three parts: a unified <b>Garment Particles</b> representation that jointly samples 2D sewing patterns and 3D draped geometry as a 5D point cloud; <b>Garment Particles Flow (GPF)</b>, a rectified flow generative model over this representation that supports text-, image-, and sketch-conditioned generation as well as diffusion posterior sampling (DPS) for editing; and <b>Particles-to-Pattern Flow (PPF)</b>, which recovers simulation-ready curved sewing patterns from the generated particles.
+      </p>
+
+      <h6><b>Pipeline Overview</b></h6>
+      <figure>
+        <img src="images/pipeline.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        End-to-end pipeline. Multimodal inputs (text, images, sketches, or partial 3D/2D edits) condition GPF, which generates a set of garment particles jointly encoding the sewing pattern and the draped 3D geometry. PPF then converts the generated particles into curve-based sewing patterns ready for physical simulation and fabrication.
+      </div>
+
+      <h6><b>Garment Particles Representation</b></h6>
+      <figure>
+        <img src="images/garment_particles.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        <b>(Left)</b> We model garments as the graph &Gamma; of the parametric function mapping a sewing pattern <em>U</em> in &#8477;<sup>2</sup> to its draped geometry <b>r</b>(<em>U</em>) in &#8477;<sup>3</sup>. <b>(Right)</b> We discretize &Gamma; with point samples <b>X</b><sub>&Gamma;</sub>. Points with the same color in 2D and 3D represent corresponding points; black points mark the boundary of <em>U</em>.
+      </div>
+
+      <!-- Diffusion trajectory player -->
+      <h6 id="diffusion"><b>Diffusion Trajectory</b></h6>
+      <div class="caption">
+        We visualize the joint generation process of Garment Particles Flow for two samples in parallel. Each column shows the diffusion of the 2D sewing pattern (top) and 3D draped geometry (bottom) at 3&times; speed. After the trajectory finishes, the 3D view transitions to a 360&deg; render of the diffused point cloud and then of the reconstructed garment, while the 2D sewing pattern remains on its final state.
+      </div>
+      <div id="diffusion-player">
+        <div id="diffusion-grid">
+          <div class="sample-col" data-sample="4">
+            <video class="vid-top" muted playsinline></video>
+            <video class="vid-bot" muted playsinline></video>
+          </div>
+          <div class="sample-col" data-sample="2">
+            <video class="vid-top" muted playsinline></video>
+            <video class="vid-bot" muted playsinline></video>
+          </div>
+        </div>
+        <p id="diffusion-label"></p>
+      </div>
+
+      <h6><b>Garment Particles Flow &amp; DPS-based Editing</b></h6>
+      <figure>
+        <img src="images/dps.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        <b>(Left)</b> Using a trained GPF model, we optimize the posterior mean at each sampling step against an observation, guiding generation toward a sample that minimizes a user-specified objective. <b>(Right)</b> Adjusting the hyperparameter <em>stop_t</em> produces more faithful (higher <em>stop_t</em>) or more diverse (lower <em>stop_t</em>) results from different random noise inputs.
+      </div>
+
+      <br>
+
+      <!-- Results -->
+      <h5>Results</h5>
+      <p align="justify">
+        We evaluate Garment Particles on garment generation (text-, image-, and sketch-conditioned) and on a wide range of editing operations enabled by DPS, including point-cloud-conditioned generation, sewing-pattern editing, silhouette-conditioned generation, and interpolation. We benchmark against competitive baselines on GarmentCodeDatav2, 4DDress, and in-the-wild images.
+      </p>
+
+      <h6><b>Text-conditioned Garment Generation</b></h6>
+      <figure>
+        <img src="images/text_generation.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        Qualitative comparison on text-conditioned garment generation against baselines. Our method produces sewing patterns whose draped geometry faithfully matches the input description.
+      </div>
+
+      <h6><b>Image-conditioned Garment Generation</b></h6>
+      <figure>
+        <img src="images/image_generation.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        Compared to baselines, which exhibit incorrect pattern style and stitching, our method correctly generates a sewing pattern that yields a draped garment matching the input image, for both sketch and GCDv2 image inputs.
+      </div>
+
+      <h6><b>In-the-wild Image-conditioned Generation</b></h6>
+      <figure>
+        <img src="images/in_the_wild.png" style="width:100%; display:block; margin:0 auto;">
+      </figure>
+      <div class="caption">
+        Our method produces more plausible sewing patterns than ChatGarment on in-the-wild images, capturing the displayed garment style.
+      </div>
+
+      <h6><b>Point-Cloud-Conditioned Garment Editing</b></h6>
+      <figure>
+        <img src="images/pointcloud_editing.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        Point-cloud-based garment editing applications enabled by GPF. <b>(a)</b> Users directly edit an existing 3D garment to guide its generation; addition and deletion of points are performed via our 3D interface. <b>(b)</b> Garment mixing: components of two existing 3D garments are combined to generate a new garment. <b>(c)</b> Text-conditioned generation from an incomplete 3D garment. Numbers indicate the number of garment particles used.
+      </div>
+
+      <h6><b>Sewing Pattern Editing</b></h6>
+      <figure>
+        <img src="images/pattern_editing.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        Given a generated garment shown in grey, we edit the sewing pattern (red parts illustrate the user's additions through our 2D UI) and use the edited pattern to guide the garment generation process.
+      </div>
+
+      <h6><b>Silhouette-Conditioned Garment Generation</b></h6>
+      <figure>
+        <img src="images/silhouette.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        The user paints a 2D projection to guide garment generation through our 2D interface. The user can control the complexity of the result by changing the number of particles. Numbers indicate the number of garment particles used.
+      </div>
+
+      <!-- <h6><b>Garment Interpolation</b></h6>
+      <figure>
+        <img src="images/interpolation.png" style="width:70%; display:block; margin:0 auto;">
+      </figure>
+      <div class="caption">
+        Baselines exhibit non-intuitive transitions and abrupt style changes. Our results show smooth variations in the 3D geometry that transition between different garment styles.
+      </div> -->
+
+      <h6><b>Multi-step Garment Editing</b></h6>
+      <figure>
+        <img src="images/multistep_edit.png" style="width:100%">
+      </figure>
+      <div class="caption">
+        A garment editing sequence combining several of the editing methods enabled by GPF.
+      </div>
+
+      <h6><b>Fabrication</b></h6>
+      <figure>
+        <img src="images/fabrication.png" style="width:100%; display:block; margin:0 auto;">
+      </figure>
+      <div class="caption">
+        Generated garments can be fabricated from the sewing patterns recovered by Particles-to-Pattern Flow.
+      </div>
+
+      <br>
+
+      <!-- BibTeX -->
+      <div class="section">
+        <h5>Citation</h5>
+        <pre style="margin:0"><code>@inproceedings{nakayama2026garment,
+  title     = {Garment Particles: A 2D--3D Symmetric Garment Representation for Generation and Editing},
+  author    = {Nakayama, Kiyohiro and Shen, I-Chao and Liu, Ruofan and Wang, Yiming and Wetzstein, Gordon and Igarashi, Takeo},
+  booktitle = {SIGGRAPH Conference Papers '26},
+  year      = {2026},
+  doi       = {10.1145/3799902.3811102}
+}</code></pre>
+      </div>
+
+      <br><br>
+
+      <!-- Acknowledgements -->
+      <div class="section">
+        <h5>Acknowledgements</h5>
+        <p>
+          This research is supported by JST ASPIRE (JPMJAP2401), the Initiative on Recommendation Program for Young Researchers and Woman Researchers, the Information Technology Center of The University of Tokyo, LVMH, Google, and the National Science Foundation Graduate Research Fellowship Program.
+        </p>
+      </div>
+
+    </div>
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/footable.min.js"></script>
+    <script type="text/javascript">
+      jQuery(function($){
+        $('.table').footable();
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', domReady);
+      function domReady() {
+        const bDicsElements = document.querySelectorAll('.b-dics');
+        bDicsElements.forEach((bDicsContainer) => {
+          new Dics({
+            container: bDicsContainer,
+            textPosition: 'right',
+            linesOrientation: 'vertical',
+            arrayBackgroundColorText: ['#FFFFFF', '#000000'],
+            arrayColorText: ['#000000', '#FFFFFF'],
+            linesColor: 'rgb(0,0,0)'
+          });
+        });
+        initDiffusionPlayer();
+      }
+
+      // Diffusion trajectory sequence player — 3 samples side by side.
+      // Tweak SPEED_TRAJ / SPEED_360 below to taste.
+      function initDiffusionPlayer() {
+        const SPEED_TRAJ = 3.0;
+        const SPEED_360  = 1.0;
+        const SAMPLES    = [4, 2];
+        const HAS_360    = { 4: true, 2: true };
+
+        const grid  = document.getElementById('diffusion-grid');
+        const label = document.getElementById('diffusion-label');
+        if (!grid || !label) return;
+
+        const cols = SAMPLES.map(function (s) {
+          const c = grid.querySelector('[data-sample="' + s + '"]');
+          return {
+            sample: s,
+            container: c,
+            top: c.querySelector('.vid-top'),
+            bot: c.querySelector('.vid-bot')
+          };
+        });
+
+        const phases = [
+          { kind: 'traj',    label: 'Diffusion trajectory (' + SPEED_TRAJ + '× speed) — 2D sewing pattern (top) and 3D draped geometry (bottom)', speed: SPEED_TRAJ },
+          { kind: 'pcd',     label: '360° render of the diffused point cloud',                                                                  speed: SPEED_360  },
+          { kind: 'garment', label: '360° render of the reconstructed garment',                                                                 speed: SPEED_360  }
+        ];
+
+        let phaseIdx = 0;
+        let pendingEnded = 0;
+        const endedHandlers = [];
+
+        function applySpeed(video, rate) {
+          const setRate = function () { try { video.playbackRate = rate; } catch (e) {} };
+          setRate();
+          video.addEventListener('loadedmetadata', setRate, { once: true });
+          video.addEventListener('play', setRate, { once: true });
+        }
+
+        function onAnyEnded() {
+          pendingEnded--;
+          if (pendingEnded <= 0) {
+            advancePhase();
+          }
+        }
+
+        function advancePhase() {
+          const FADE_MS = 450;
+          const cur = phases[phaseIdx];
+          const next = phases[(phaseIdx + 1) % phases.length];
+          // Bot src changes on every transition; top src only changes when looping back to traj.
+          const fadeTop = (cur.kind !== 'traj' && next.kind === 'traj');
+          const fading = [label];
+          cols.forEach(function (col) {
+            fading.push(col.bot);
+            if (fadeTop) fading.push(col.top);
+          });
+          fading.forEach(function (el) { el.classList.add('fading'); });
+          setTimeout(function () {
+            phaseIdx = (phaseIdx + 1) % phases.length;
+            loadPhase();
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                fading.forEach(function (el) { el.classList.remove('fading'); });
+              });
+            });
+          }, FADE_MS);
+        }
+
+        function clearEndedListeners() {
+          while (endedHandlers.length) {
+            const e = endedHandlers.pop();
+            e.video.removeEventListener('ended', e.handler);
+          }
+        }
+
+        function srcFor(sample, kind) {
+          if (kind === 'panel')   return 'videos/sample' + sample + '_traj_panel.mp4';
+          if (kind === 'sim')     return 'videos/sample' + sample + '_traj_sim.mp4';
+          if (kind === 'pcd')     return 'videos/sample' + sample + '_360_pcd.mp4';
+          if (kind === 'garment') return 'videos/sample' + sample + '_360_garment.mp4';
+          return null;
+        }
+
+        function setVideo(video, src, rate) {
+          video.pause();
+          if (src) {
+            video.src = src;
+            applySpeed(video, rate);
+            video.load();
+          }
+        }
+
+        function playVideo(video) {
+          const p = video.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+
+        function loadPhase() {
+          clearEndedListeners();
+          const ph = phases[phaseIdx];
+          label.textContent = ph.label;
+
+          let toPlay = [];
+          cols.forEach(function (col) {
+            let topSrc = null, botSrc = null;
+            if (ph.kind === 'traj') {
+              topSrc = srcFor(col.sample, 'panel');
+              botSrc = srcFor(col.sample, 'sim');
+            } else if (HAS_360[col.sample]) {
+              botSrc = srcFor(col.sample, ph.kind);
+            }
+            // Configure top
+            if (topSrc) {
+              setVideo(col.top, topSrc, ph.speed);
+              toPlay.push(col.top);
+            } else {
+              col.top.pause();
+            }
+            // Configure bot
+            if (botSrc) {
+              setVideo(col.bot, botSrc, ph.speed);
+              toPlay.push(col.bot);
+            } else if (ph.kind === 'traj') {
+              col.bot.pause();
+            }
+            // else: phase has no bot src for this column (sample 1 in 360 phase) — leave last frame
+          });
+
+          pendingEnded = toPlay.length;
+
+          toPlay.forEach(function (v) {
+            const h = onAnyEnded;
+            v.addEventListener('ended', h);
+            endedHandlers.push({ video: v, handler: h });
+            playVideo(v);
+          });
+
+          // Edge case: nothing playing — advance after a beat
+          if (pendingEnded === 0) {
+            setTimeout(function () {
+              phaseIdx = (phaseIdx + 1) % phases.length;
+              loadPhase();
+            }, 1500);
+          }
+        }
+
+        loadPhase();
+      }
+    </script>
+  </body>
+</html>
